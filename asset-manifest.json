@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/geburtstag-app/static/css/main.e467eed8.css",
+    "main.js": "/geburtstag-app/static/js/main.e237751e.js",
+    "static/js/453.00c6b1ab.chunk.js": "/geburtstag-app/static/js/453.00c6b1ab.chunk.js",
+    "index.html": "/geburtstag-app/index.html",
+    "main.e467eed8.css.map": "/geburtstag-app/static/css/main.e467eed8.css.map",
+    "main.e237751e.js.map": "/geburtstag-app/static/js/main.e237751e.js.map",
+    "453.00c6b1ab.chunk.js.map": "/geburtstag-app/static/js/453.00c6b1ab.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e467eed8.css",
+    "static/js/main.e237751e.js"
+  ]
+}
