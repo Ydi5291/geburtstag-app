@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { db, auth } from "../firebase";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import BirthdayNotifications from "./BirthdayNotifications";
+import { useUpcomingBirthdays } from "../hooks/useUpcomingBirthdays";
 import "../styles/BirthdayList.css";
 
 function calculateAge(dateString) {
@@ -27,6 +29,9 @@ function BirthdayList() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [abortController, setAbortController] = useState(null);
+
+    // Hook pour les notifications d'anniversaires
+    const upcomingBirthdays = useUpcomingBirthdays(birthdays);
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((u) => {
@@ -233,6 +238,9 @@ function BirthdayList() {
     return (
         <div className="birthday-list-container">
             <h3>Geburtstage verwalten</h3>
+            
+            {/* Composant de notifications d'anniversaires */}
+            <BirthdayNotifications upcomingBirthdays={upcomingBirthdays} />
             
             {error && (
                 <div className="error-message">

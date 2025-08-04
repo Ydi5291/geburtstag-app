@@ -78,9 +78,25 @@
 .birthday-list li > div {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
+}
+
+/* Container pour les informations de la personne */
+.birthday-list li > div > div:first-child {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+/* Container pour les boutons d'action - par défaut en ligne */
+.birthday-list li > div > div:last-child {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .birthday-list li:last-child {
@@ -91,6 +107,7 @@
   font-weight: 600;
   font-size: 1.1rem;
   color: #333;
+  text-align: left;
 }
 
 .birthday-details {
@@ -119,12 +136,14 @@
 /* Styles pour les boutons d'action */
 .birthday-list button {
   padding: 6px 12px;
-  margin: 0 4px;
+  margin: 0;
   border: none;
   border-radius: 4px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
+  min-width: 80px;
+  text-align: center;
 }
 
 .birthday-list button:disabled {
@@ -205,4 +224,78 @@
 
 .edit-buttons button:last-child:hover:not(:disabled) {
   background: #616161;
+}
+
+/* Responsive pour écrans moyens et petits (700px et moins) */
+@media (max-width: 700px) {
+  /* Boutons en colonne pour les écrans plus petits */
+  .birthday-list li > div > div:last-child {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .birthday-list-container {
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  .birthday-list-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .birthday-list-form input[type="text"],
+  .birthday-list-form input[type="date"] {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  .birthday-list-form button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+/* Responsive pour très petits écrans (iPhone et similaires) */
+@media (max-width: 480px) {
+  .birthday-list-container {
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 16px;
+  }
+  
+  .birthday-list li {
+    padding: 12px 0;
+  }
+  
+  .birthday-name {
+    font-size: 1rem;
+  }
+  
+  .birthday-details span {
+    font-size: 0.8rem;
+  }
+  
+  .birthday-list button {
+    font-size: 0.8rem;
+    padding: 5px 8px;
+    min-width: 60px;
+  }
+  
+  .birthday-list-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .birthday-list-form input[type="text"],
+  .birthday-list-form input[type="date"] {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  .birthday-list-form button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
 }
