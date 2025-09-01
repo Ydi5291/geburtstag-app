@@ -54,8 +54,8 @@ function BirthdayList() {
                 const querySnapshot = await getDocs(q);
                 setBirthdays(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
             } catch (err) {
-                console.error("Erreur lors du chargement des anniversaires:", err);
-                setError("Erreur lors du chargement des anniversaires");
+                console.error("Fehler beim Laden der Geburtstage:", err);
+                setError("Fehler beim Laden der Geburtstage");
             } finally {
                 setLoading(false);
             }
@@ -66,21 +66,21 @@ function BirthdayList() {
     const handleAdd = async (e) => {
         e.preventDefault();
         if (!user) {
-            setError("Vous devez être connecté pour ajouter un anniversaire");
+            setError("Sie müssen angemeldet sein, um einen Geburtstag hinzuzufügen");
             return;
         }
         
-        // Validation des données
+        // Datenvalidierung
         if (!firstName.trim() || !lastName.trim() || !date) {
-            setError("Tous les champs sont obligatoires");
+            setError("Alle Felder sind erforderlich");
             return;
         }
         
-        // Vérifier si l'anniversaire existe déjà
+        // Überprüfen, ob der Geburtstag bereits existiert
         if (birthdays.some(b => b.firstName.toLowerCase() === firstName.trim().toLowerCase() && 
                               b.lastName.toLowerCase() === lastName.trim().toLowerCase() && 
                               b.date === date)) {
-            setError("Cet anniversaire existe déjà !");
+            setError("Dieser Geburtstag existiert bereits!");
             return;
         }
         
@@ -88,7 +88,7 @@ function BirthdayList() {
             setLoading(true);
             setError("");
             
-            console.log("Tentative d'ajout d'anniversaire:", { firstName: firstName.trim(), lastName: lastName.trim(), date });
+            console.log("Versuch, Geburtstag hinzuzufügen:", { firstName: firstName.trim(), lastName: lastName.trim(), date });
             
             // Essayer d'abord sans timeout pour avoir l'erreur exacte
             const docRef = await addDoc(collection(db, "birthdays"), {
@@ -98,7 +98,7 @@ function BirthdayList() {
                 date
             });
             
-            console.log("Anniversaire ajouté avec succès:", docRef.id);
+            console.log("Geburtstag erfolgreich hinzugefügt:", docRef.id);
             
             setBirthdays([
                 ...birthdays,
@@ -108,18 +108,18 @@ function BirthdayList() {
             setLastName("");
             setDate("");
         } catch (err) {
-            console.error("Erreur lors de l'ajout:", err);
-            console.error("Code d'erreur:", err.code);
-            console.error("Message complet:", err.message);
+            console.error("Fehler beim Hinzufügen:", err);
+            console.error("Fehlercode:", err.code);
+            console.error("Vollständige Nachricht:", err.message);
             
             if (err.code === 'permission-denied') {
-                setError(`❌ RÈGLES FIRESTORE INCORRECTES\n\nPour résoudre ce problème:\n1. Allez sur https://console.firebase.google.com/\n2. Sélectionnez votre projet "geburtstag-app"\n3. Dans le menu de gauche, cliquez sur "Firestore Database"\n4. Cliquez sur l'onglet "Rules"\n5. Remplacez le contenu par:\n\nrules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}\n\n6. Cliquez sur "Publier"`);
+                setError(`❌ FALSCHE FIRESTORE-REGELN\n\nSo beheben Sie das Problem:\n1. Gehen Sie zu https://console.firebase.google.com/\n2. Wählen Sie Ihr Projekt "geburtstag-app" aus\n3. Klicken Sie im linken Menü auf "Firestore Database"\n4. Klicken Sie auf den Tab "Rules"\n5. Ersetzen Sie den Inhalt durch:\n\nrules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n  }\n}\n\n6. Klicken Sie auf "Veröffentlichen"`);
             } else if (err.code === 'failed-precondition') {
-                setError("❌ Créez d'abord une base de données Firestore dans la console Firebase");
+                setError("❌ Erstellen Sie zuerst eine Firestore-Datenbank in der Firebase-Konsole");
             } else if (err.code === 'unavailable') {
-                setError("❌ Service Firebase indisponible. Réessayez plus tard.");
+                setError("❌ Firebase-Dienst nicht verfügbar. Bitte versuchen Sie es später erneut.");
             } else {
-                setError(`❌ Erreur: ${err.code || 'unknown'} - ${err.message}`);
+                setError(`❌ Fehler: ${err.code || 'unbekannt'} - ${err.message}`);
             }
         } finally {
             setLoading(false);
@@ -127,7 +127,7 @@ function BirthdayList() {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet anniversaire ?")) {
+        if (!window.confirm("Sind Sie sicher, dass Sie diesen Geburtstag löschen möchten?")) {
             return;
         }
         
@@ -135,7 +135,7 @@ function BirthdayList() {
             setLoading(true);
             setError("");
             
-            console.log("Tentative de suppression:", id);
+            console.log("Versuch, Geburtstag zu löschen:", id);
             
             // Ajouter un timeout
             const deletePromise = deleteDoc(doc(db, "birthdays", id));
@@ -145,16 +145,16 @@ function BirthdayList() {
             
             await Promise.race([deletePromise, timeoutPromise]);
             
-            console.log("Suppression réussie");
+            console.log("Löschen erfolgreich");
             setBirthdays(birthdays.filter(b => b.id !== id));
         } catch (err) {
-            console.error("Erreur lors de la suppression:", err);
+            console.error("Fehler beim Löschen:", err);
             if (err.message.includes('Timeout')) {
-                setError("L'opération a pris trop de temps. Vérifiez votre connexion internet.");
+                setError("Die Operation hat zu lange gedauert. Bitte überprüfen Sie Ihre Internetverbindung.");
             } else if (err.code === 'permission-denied') {
-                setError("Permission refusée. Vérifiez vos règles Firebase.");
+                setError("Zugriff verweigert. Bitte überprüfen Sie Ihre Firebase-Regeln.");
             } else {
-                setError(`Erreur lors de la suppression: ${err.message}`);
+                setError(`Fehler beim Löschen: ${err.message}`);
             }
         } finally {
             setLoading(false);
@@ -169,9 +169,9 @@ function BirthdayList() {
     };
 
     const handleUpdate = async (id) => {
-        // Validation des données
+        // Datenvalidierung
         if (!editFirstName.trim() || !editLastName.trim() || !editDate) {
-            setError("Tous les champs sont obligatoires");
+            setError("Alle Felder sind erforderlich");
             return;
         }
         
@@ -179,7 +179,7 @@ function BirthdayList() {
             setLoading(true);
             setError("");
             
-            console.log("Tentative de mise à jour:", { id, firstName: editFirstName.trim(), lastName: editLastName.trim(), date: editDate });
+            console.log("Versuch, Geburtstag zu aktualisieren:", { id, firstName: editFirstName.trim(), lastName: editLastName.trim(), date: editDate });
             
             // Ajouter un timeout
             const updatePromise = updateDoc(doc(db, "birthdays", id), {
@@ -194,7 +194,7 @@ function BirthdayList() {
             
             await Promise.race([updatePromise, timeoutPromise]);
             
-            console.log("Mise à jour réussie");
+            console.log("Aktualisierung erfolgreich");
             
             setBirthdays(birthdays.map(b =>
                 b.id === id ? { ...b, firstName: editFirstName.trim(), lastName: editLastName.trim(), date: editDate } : b
@@ -205,13 +205,13 @@ function BirthdayList() {
             setEditLastName("");
             setEditDate("");
         } catch (err) {
-            console.error("Erreur lors de la mise à jour:", err);
+            console.error("Fehler bei der Aktualisierung:", err);
             if (err.message.includes('Timeout')) {
-                setError("L'opération a pris trop de temps. Vérifiez votre connexion internet.");
+                setError("Die Operation hat zu lange gedauert. Bitte überprüfen Sie Ihre Internetverbindung.");
             } else if (err.code === 'permission-denied') {
-                setError("Permission refusée. Vérifiez vos règles Firebase.");
+                setError("Zugriff verweigert. Bitte überprüfen Sie Ihre Firebase-Regeln.");
             } else {
-                setError(`Erreur lors de la mise à jour: ${err.message}`);
+                setError(`Fehler bei der Aktualisierung: ${err.message}`);
             }
         } finally {
             setLoading(false);
@@ -219,11 +219,11 @@ function BirthdayList() {
     };
 
     const handleCancelEdit = () => {
-        setEditId(null);
-        setEditFirstName("");
-        setEditLastName("");
-        setEditDate("");
-        setError("");
+    setEditId(null);
+    setEditFirstName("");
+    setEditLastName("");
+    setEditDate("");
+    setError("");
     };
 
     const handleCancelOperation = () => {
@@ -232,7 +232,7 @@ function BirthdayList() {
             setAbortController(null);
         }
         setLoading(false);
-        setError("Opération annulée");
+        setError("Vorgang abgebrochen");
     };
 
     return (
